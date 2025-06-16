@@ -1,0 +1,1 @@
+{"model_name": "Narrativaai/deberta-v3-small-finetuned-hate_speech18", "threshold": 0.4, "max_length": 128, "batch_size": 16}
