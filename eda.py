@@ -7,6 +7,9 @@ def run_eda():
     from wordcloud import WordCloud
     import nltk
     from nltk.corpus import stopwords
+    import pandas as pd
+    from datasets import load_dataset
+
 
     # Descargar stopwords (si no está hecho)
     nltk.download('stopwords')
@@ -14,7 +17,10 @@ def run_eda():
     # Cargar datos
     @st.cache_data
     def load_data():
-        df = pd.read_csv("hateSpeech/train.csv")
+
+        # Cargar el dataset 'train.csv' desde el repositorio AnaPau777/hateSpeech
+        dataset = load_dataset("AnaPau777/hateSpeech", split="train")
+        df = pd.DataFrame(dataset)
         df = df[["class", "tweet"]]
         return df
 
