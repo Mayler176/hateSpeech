@@ -1,91 +1,94 @@
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from wordcloud import WordCloud
+from collections import Counter
+import nltk
+from nltk.corpus import stopwords
+from datasets import load_dataset
+
+nltk.download('stopwords')
+
 def run_eda():
+    st.title("Exploración de Datos - Hate Speech")
 
-    import streamlit as st
-    import pandas as pd
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    from wordcloud import WordCloud
-    import nltk
-    from nltk.corpus import stopwords
-    import pandas as pd
-    from datasets import load_dataset
+    # --- Cargar datos desde Hugging Face ---
+    dataset = load_dataset("AnaPau777/hateSpeech", split="train")
+    data = pd.DataFrame(dataset)
 
-
-    # Descargar stopwords (si no está hecho)
-    nltk.download('stopwords')
-
-    # Cargar datos
-    @st.cache_data
-    def load_data():
-
-        # Cargar el dataset 'train.csv' desde el repositorio AnaPau777/hateSpeech
-        dataset = load_dataset("AnaPau777/hateSpeech", split="train")
-        df = pd.DataFrame(dataset)
-        df = df[["class", "tweet"]]
-        return df
-
-    df = load_data()
+    # Renombrar columnas
+    data = data.rename(columns={"text": "text", "hate speech score": "hate_speech_score"})
+    data = data[["text", "hate_speech_score"]].dropna()
 
     # Definir stopwords
     stop_words = set(stopwords.words('english'))
-    stop_words.update(["the", "and", "a", "of", "to", "is", "in", "that", "it", "on", "for", "with", "as", "this", "was", "but", "rt"])
+    new_stopwords = ["the", "and", "a", "of", "to", "is", "in", "that", "it", "on", "for", "with", "as", "this", "was", "but", "rt", "url"]
+    stop_words.update(new_stopwords)
 
-    # Función para limpiar texto
+    # Limpiar texto
     def clean_tweet(tweet):
         return ' '.join([word for word in tweet.split() if word.lower() not in stop_words])
+    
+    data["text"] = data["text"].astype(str).apply(clean_tweet)
 
-    # Limpiar tweets
-    df["tweet"] = df["tweet"].astype(str).apply(clean_tweet)
+    # Métricas básicas
+    data['token_length'] = data["text"].apply(lambda x: len(x.split()))
+    data['unique_words'] = data["text"].apply(lambda x: len(set(x.lower().split())))
 
-    # Token length y palabras únicas
-    df["token_length"] = df["tweet"].apply(lambda x: len(x.split()))
-    df["unique_words"] = df["tweet"].apply(lambda x: len(set(x.split())))
+    # WordCloud
+    st.subheader("Nube de Palabras General")
+    text = " ".join(data['text'].tolist())
+    wordcloud = WordCloud(width=800, height=400, background_color='white', stopwords=stop_words).generate(text)
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.imshow(wordcloud, interpolation='bilinear')
+    ax.axis("off")
+    st.pyplot(fig)
 
-    # Página Streamlit
-    st.title("📊 Análisis Exploratorio de Tweets - Hate Speech Dataset")
+    # Histograma hate speech score
+    st.subheader("Distribución del Hate Speech Score")
+    fig, ax = plt.subplots(figsize=(8, 5))
+    sns.histplot(data['hate_speech_score'], bins=30, kde=True, ax=ax)
+    st.pyplot(fig)
 
-    # Mostrar dataframe limpio
-    if st.checkbox("Mostrar dataset limpio"):
-        st.dataframe(df.sample(10))
+    # Longitud de tweets
+    st.subheader("Distribución de Longitud de Tweets")
+    fig, ax = plt.subplots(figsize=(8, 5))
+    sns.histplot(data['token_length'], bins=30, kde=True, ax=ax)
+    st.pyplot(fig)
 
-    # Distribución de clases
-    st.subheader("Distribución de Clases")
-    fig1, ax1 = plt.subplots()
-    sns.countplot(x='class', data=df, ax=ax1)
-    st.pyplot(fig1)
+    # KDE 2D
+    st.subheader("Densidad: Hate Speech Score vs Palabras Únicas")
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sns.kdeplot(data=data, x='hate_speech_score', y='unique_words', cmap="Reds", fill=True, thresh=0.05, ax=ax)
+    st.pyplot(fig)
 
-    # Distribución de longitud de tweet
-    st.subheader("Distribución de longitud de tweet por clase")
-    fig2, ax2 = plt.subplots()
-    sns.boxplot(x='class', y='token_length', data=df, ax=ax2)
-    st.pyplot(fig2)
+    # Tweets extremos
+    st.subheader("Tweets con Hate Speech Score Más Alto")
+    st.dataframe(data.sort_values('hate_speech_score', ascending=False).head(5)[['text', 'hate_speech_score']])
 
-    # Palabras únicas por tweet
-    st.subheader("Palabras únicas por tweet por clase")
-    fig3, ax3 = plt.subplots()
-    sns.boxplot(x='class', y='unique_words', data=df, ax=ax3)
-    st.pyplot(fig3)
+    st.subheader("Tweets con Hate Speech Score Más Bajo")
+    st.dataframe(data.sort_values('hate_speech_score', ascending=True).head(5)[['text', 'hate_speech_score']])
 
-    # Wordcloud general
-    st.subheader("Nube de palabras general")
-    text = " ".join(df["tweet"])
-    wordcloud = WordCloud(width=800, height=400, background_color="white", stopwords=stop_words).generate(text)
-    fig4, ax4 = plt.subplots(figsize=(10, 5))
-    ax4.imshow(wordcloud, interpolation='bilinear')
-    ax4.axis('off')
-    st.pyplot(fig4)
+    # Palabras frecuentes
+    def plot_top_words(text, title):
+        words = [w for w in text.split() if w not in stop_words]
+        counter = Counter(words)
+        common = counter.most_common(15)
+        if common:
+            words, freqs = zip(*common)
+            fig, ax = plt.subplots(figsize=(10, 5))
+            sns.barplot(x=list(freqs), y=list(words), ax=ax)
+            ax.set_title(title)
+            st.pyplot(fig)
+        else:
+            st.warning(f"No se encontraron palabras frecuentes para: {title}")
 
-    # Wordcloud por clase
-    st.subheader("Nubes de palabras por clase")
-    for c in sorted(df["class"].unique()):
-        st.markdown(f"**Clase {c}**")
-        text_c = " ".join(df[df["class"] == c]["tweet"])
-        wc = WordCloud(width=800, height=400, background_color="white", stopwords=stop_words).generate(text_c)
-        fig_c, ax_c = plt.subplots(figsize=(10, 5))
-        ax_c.imshow(wc, interpolation='bilinear')
-        ax_c.axis('off')
-        st.pyplot(fig_c)
+    low_score_text = " ".join(data[data['hate_speech_score'] < 0.25]['text'])
+    high_score_text = " ".join(data[data['hate_speech_score'] > 0.75]['text'])
 
-    # Tweets ruidosos
-    st.subheader("Ejemplos de tweets cortos/ruidosos (menos de 4 palabras)")
-    st.dataframe(df[df["token_length"] < 4][["tweet", "class"]].head(10))
+    st.subheader("Palabras frecuentes en Tweets con bajo hate score")
+    plot_top_words(low_score_text, "Palabras más frecuentes en Tweets con bajo hate score")
+
+    st.subheader("Palabras frecuentes en Tweets con alto hate score")
+    plot_top_words(high_score_text, "Palabras más frecuentes en Tweets con alto hate score")
