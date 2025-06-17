@@ -52,7 +52,12 @@ def run_prediction():
 
     # --- Interfaz de usuario Streamlit ---
     st.title("🔍 Hate Speech Detector")
-    st.markdown("Select a model to analyze the text:")
+    url = "https://www.kaggle.com/datasets/arkhoshghalb/twitter-sentiment-analysis-hatred-speech"
+
+    st.markdown('''
+                :orange-badge[⚠️ Hey!]
+    :rainbow[*note that these models were trained using tweets. The input should resemble this type of content to ensure the best posible results. See some examples* [here](%s) ] '''% url)
+    st.markdown("**Select a model to analyze the text:**")
 
     modelo_elegido = st.selectbox("Modelo", list(MODELOS.keys()))
     modelo_config = MODELOS[modelo_elegido]
