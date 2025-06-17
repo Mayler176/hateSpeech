@@ -14,3 +14,8 @@ if page == "Predicción":
 elif page == "Análisis EDA":
     from eda import run_eda
     run_eda()
+
+
+elif page == "Evaluation and Justification":
+    from evaluation import run_eva
+    run_eva()
