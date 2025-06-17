@@ -8,25 +8,21 @@ def run():
     # --- Imágenes del análisis (una por una) ---
 
     st.header("1. Mapa Mundial de Tweets")
-    st.image("world_map.png", caption="Distribución Geográfica de Tweets")
+    st.image("images/world_map.png", caption="Distribución Geográfica de Tweets")
 
     st.header("2. Palabras Más Frecuentes")
-    st.image("palabrasFrecuentes.png", caption="Palabras Frecuentes Generales")
+    st.image("images/palabrasFrecuentes.png", caption="Palabras Frecuentes Generales")
 
-    st.image("palabrasFrecuentesAlto.png", caption="Palabras Frecuentes en Tweets con Score Alto")
+    st.image("images/palabrasFrecuentesAlto.png", caption="Palabras Frecuentes en Tweets con Score Alto")
 
     st.header("3. Distribución de Hate Speech")
-    st.image("distribution_hateSpeech.png", caption="Distribución de Clases")
+    st.image("images/distribution_hateSpeech.png", caption="Distribución de Clases")
 
     st.header("4. Densidad de Hate Speech")
-    st.image("densidad_hateSpeech.png", caption="Distribución de Densidad")
+    st.image("images/densidad_hateSpeech.png", caption="Distribución de Densidad")
 
     st.header("5. Longitud de Tweets")
-    st.image("dist_long_tweets.png", caption="Distribución de Longitudes de Tweets")
-
-    st.header("6. Matrices de Confusión (EDA)")
-    st.image("roberta_confusionMatrix.png", caption="Confusión - RoBERTa")
-    st.image("distilbert_confusionMatrix.png", caption="Confusión - DistilBERT")
+    st.image("images/dist_long_tweets.png", caption="Distribución de Longitudes de Tweets")
 
     # --- DataFrames o tablas ---
     st.markdown("---")
