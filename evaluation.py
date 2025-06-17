@@ -6,13 +6,13 @@ def run_eva():
 
     st.header("1. Matrices de Confusión")
     st.subheader("DeBERTa")
-    st.image(Image.open("roberta_confusionMatrix.png"), caption="Matriz de Confusión - DeBERTa")
+    st.image(Image.open("images/roberta_confusionMatrix.png"), caption="Matriz de Confusión - DeBERTa")
 
     st.subheader("DistilBERT")
-    st.image(Image.open("distilbert_confusionMatrix.png"), caption="Matriz de Confusión - DistilBERT")
+    st.image(Image.open("images/distilbert_confusionMatrix.png"), caption="Matriz de Confusión - DistilBERT")
 
     st.subheader("Modelo con Oversampling")
-    st.image(Image.open("descarga.png"), caption="Matriz de Confusión - Oversampling")
+    st.image(Image.open("images/descarga.png"), caption="Matriz de Confusión - Oversampling")
 
     st.markdown("---")
     st.header("2. Model Justification (10 pts)")
