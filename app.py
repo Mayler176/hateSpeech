@@ -4,8 +4,8 @@ os.environ["CUDA_VISIBLE_DEVICES"] = ""  # Asegura uso de CPU en Streamlit Cloud
 import streamlit as st
 
 # Menú de navegación
-st.sidebar.title("Navegación")
-page = st.sidebar.radio("Ir a", ["Prediction", "EDA Analysis", "Evaluation and Justification", "Hyperparameter Tuning"])
+st.sidebar.title("Navegation")
+page = st.sidebar.radio("Go to", ["Prediction", "EDA Analysis", "Evaluation and Justification", "Hyperparameter Tuning"])
 
 if page == "Prediction":
     from prediction import run_prediction
