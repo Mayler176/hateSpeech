@@ -2,20 +2,20 @@ import streamlit as st
 from PIL import Image
 
 def run_eva():
-    st.title("📈 Evaluación de Modelos - Hate Speech Detection")
+    st.title("📈 Model Evaluation and Justification")
 
-    st.header("1. Matrices de Confusión")
+    st.header("1. Confusion Matrices")
     st.subheader("DeBERTa")
-    st.image(Image.open("images/roberta_confusionMatrix.png"), caption="Matriz de Confusión - DeBERTa")
+    st.image(Image.open("images/roberta_confusionMatrix.png"), caption="Confusion Matrix - DeBERTa")
 
     st.subheader("DistilBERT")
-    st.image(Image.open("images/distilbert_confusionMatrix.png"), caption="Matriz de Confusión - DistilBERT")
+    st.image(Image.open("images/distilbert_confusionMatrix.png"), caption="Confusion Matrix - DistilBERT")
 
     st.subheader("Modelo con Oversampling")
-    st.image(Image.open("images/deberta_confusionMatrix.png"), caption="Matriz de Confusión - Oversampling")
+    st.image(Image.open("images/deberta_confusionMatrix.png"), caption="Confusion Matrix - Oversampling")
 
     st.markdown("---")
-    st.header("2. Model Justification (10 pts)")
+    st.header("2. Model Justification")
 
     st.markdown("""
 We selected three state-of-the-art transformer-based models for hate speech detection: **DistilBERT**, 
@@ -43,7 +43,7 @@ imbalanced datasets.
 """)
 
     st.markdown("---")
-    st.header("3. Classification Report (10 pts)")
+    st.header("3. Classification Report")
 
     st.subheader("DistilBERT")
     st.code("""
@@ -82,7 +82,7 @@ weighted avg       0.86      0.86      0.86      1779
     """)
 
     st.markdown("---")
-    st.header("4. Confusion Matrix (5 pts)")
+    st.header("4. Confusion Matrix")
     st.markdown("""
 Each model was evaluated using a labeled heatmap of the confusion matrix. The axes are clearly  
 marked with "Predicted" and "True", and class labels "No Hate" and "Hate" are displayed. From the  
@@ -100,7 +100,7 @@ These matrices offer visual confirmation of performance trends observed in the c
 """)
 
     st.markdown("---")
-    st.header("5. Error Analysis (10 pts)")
+    st.header("5. Error Analysis")
     st.markdown("""
 Misclassifications across models tend to occur in linguistically ambiguous or culturally contextual  
 expressions. For instance:

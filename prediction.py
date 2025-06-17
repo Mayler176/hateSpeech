@@ -51,15 +51,15 @@ def run_prediction():
             return label, hate_score
 
     # --- Interfaz de usuario Streamlit ---
-    st.title("🔍 Detector de Hate Speech")
-    st.markdown("Selecciona un modelo para analizar el texto:")
+    st.title("🔍 Hate Speech Detector")
+    st.markdown("Select a model to analyze the text:")
 
     modelo_elegido = st.selectbox("Modelo", list(MODELOS.keys()))
     modelo_config = MODELOS[modelo_elegido]
 
     model, tokenizer = load_model_and_tokenizer(modelo_config["name"], modelo_elegido)
 
-    user_input = st.text_area("Escribe un texto:")
+    user_input = st.text_area("Write a hate related type of tweet")
 
     if st.button("Analizar"):
         if user_input.strip():
@@ -74,4 +74,4 @@ def run_prediction():
             st.markdown(f"**Resultado:** `{label}`")
             st.markdown(f"**Score de hate speech:** `{score:.4f}`")
         else:
-            st.warning("Por favor, escribe un texto para analizar.")
+            st.warning("Please, write a tweet to analyze it")
