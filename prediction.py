@@ -1,5 +1,4 @@
 def run_prediction():
-        
     import os
     os.environ["CUDA_VISIBLE_DEVICES"] = ""  # Asegura uso de CPU en Streamlit Cloud
 
@@ -21,7 +20,7 @@ def run_prediction():
             "max_length": 128
         },
         "DeBERTa": {
-            "name": "AnaPau777/deberta",
+            "name": "Narrativaai/deberta-v3-small-finetuned-hate_speech18",
             "threshold": 0.4,
             "max_length": 128
         }
@@ -29,9 +28,15 @@ def run_prediction():
 
     # --- Cargar modelos/tokenizers con cache ---
     @st.cache_resource
-    def load_model_and_tokenizer(model_name):
+    def load_model_and_tokenizer(model_name, model_key):
         model = AutoModelForSequenceClassification.from_pretrained(model_name)
-        tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+        # DeBERTa requiere use_fast=False para evitar tokenizer.json corrupto
+        if model_key == "DeBERTa":
+            tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=False)
+        else:
+            tokenizer = AutoTokenizer.from_pretrained(model_name)
+
         model.eval()
         return model, tokenizer
 
@@ -52,7 +57,7 @@ def run_prediction():
     modelo_elegido = st.selectbox("Modelo", list(MODELOS.keys()))
     modelo_config = MODELOS[modelo_elegido]
 
-    model, tokenizer = load_model_and_tokenizer(modelo_config["name"])
+    model, tokenizer = load_model_and_tokenizer(modelo_config["name"], modelo_elegido)
 
     user_input = st.text_area("Escribe un texto:")
 
