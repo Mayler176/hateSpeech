@@ -31,7 +31,7 @@ def run_prediction():
     @st.cache_resource
     def load_model_and_tokenizer(model_name):
         model = AutoModelForSequenceClassification.from_pretrained(model_name)
-        tokenizer = AutoTokenizer.from_pretrained("cardiffnlp/twitter-roberta-base-hate")
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
         model.eval()
         return model, tokenizer
 
