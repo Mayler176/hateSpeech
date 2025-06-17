@@ -2,51 +2,28 @@ import streamlit as st
 from PIL import Image
 
 def run_eva():
-    st.title("📈 Model Evaluation and Justification")
+    st.title("🤖 Model Evaluation Dashboard")
 
-    st.header("1. Confusion Matrices")
-    st.subheader("DeBERTa")
-    st.image(Image.open("images/roberta_confusionMatrix.png"), caption="Confusion Matrix - DeBERTa")
+    st.markdown("### Select the model you want to visualize:")
+    model = st.selectbox("Available models:", ["RoBERTa", "DistilBERT", "DeBERTa"])
 
-    st.subheader("DistilBERT")
-    st.image(Image.open("images/distilbert_confusionMatrix.png"), caption="Confusion Matrix - DistilBERT")
+    # Mostrar imagen y clasificación según el modelo seleccionado
+    st.header("📌 Confusion Matrix")
+    col1, col2 = st.columns([2, 3])
+    with col1:
+        st.markdown(f"### {model}")
+        if model == "RoBERTa":
+            img_path = "images/roberta_confusionMatrix.png"
+        elif model == "DistilBERT":
+            img_path = "images/distilbert_confusionMatrix.png"
+        else:
+            img_path = "images/deberta_confusionMatrix.png"
+        st.image(Image.open(img_path), caption=f"Confusion Matrix - {model}")
 
-    st.subheader("Modelo con Oversampling")
-    st.image(Image.open("images/deberta_confusionMatrix.png"), caption="Confusion Matrix - Oversampling")
-
-    st.markdown("---")
-    st.header("2. Model Justification")
-
-    st.markdown("""
-We selected three state-of-the-art transformer-based models for hate speech detection: **DistilBERT**, 
-**RoBERTa**, and **DeBERTa**. These models were chosen due to their demonstrated effectiveness in
-natural language understanding tasks, especially those requiring nuanced language interpretation like
-hate speech detection. The architecture of each model offers unique benefits that align with the needs
-of our problem, ensuring robust performance across a range of linguistic inputs.
-
-**DistilBERT** is a distilled version of BERT, significantly smaller and faster, yet still powerful.  
-It retains approximately 97% of BERT’s performance while using 40% fewer parameters, making it  
-optimal for real-time applications and limited-resource environments. Its ability to generalize  
-well despite being lightweight makes it an excellent baseline for benchmarking more complex models.
-
-**RoBERTa** enhances the BERT architecture by removing the next sentence prediction objective  
-and employing dynamic masking and longer training. These changes make it more robust for  
-capturing intricate semantic relationships, which is critical in hate speech where hostility may be  
-subtly implied rather than explicitly stated. Its consistent top-tier performance across NLP  
-benchmarks supports its selection.
-
-**DeBERTa** introduces a novel disentangled attention mechanism and enhanced positional  
-embeddings, allowing the model to treat content and position separately. This makes it  
-especially effective in understanding contextual and indirect language—a common trait in hate  
-speech. Additionally, its improved generalization capabilities make it suitable for diverse and  
-imbalanced datasets.
-""")
-
-    st.markdown("---")
-    st.header("3. Classification Report")
-
-    st.subheader("DistilBERT")
-    st.code("""
+    with col2:
+        st.markdown("### Classification Report")
+        if model == "DistilBERT":
+            st.code("""
               precision    recall  f1-score   support
 
     No Hate       0.83      0.86      0.85       890
@@ -55,10 +32,9 @@ imbalanced datasets.
     accuracy                           0.83      1779
    macro avg       0.83      0.83      0.83      1779
 weighted avg       0.83      0.83      0.83      1779
-    """)
-
-    st.subheader("RoBERTa")
-    st.code("""
+            """)
+        elif model == "RoBERTa":
+            st.code("""
               precision    recall  f1-score   support
 
     No Hate       0.82      0.88      0.85       890
@@ -67,10 +43,9 @@ weighted avg       0.83      0.83      0.83      1779
     accuracy                           0.84      1779
    macro avg       0.84      0.84      0.84      1779
 weighted avg       0.84      0.84      0.84      1779
-    """)
-
-    st.subheader("DeBERTa")
-    st.code("""
+            """)
+        else:
+            st.code("""
               precision    recall  f1-score   support
 
     No Hate       0.87      0.85      0.86       890
@@ -79,52 +54,45 @@ weighted avg       0.84      0.84      0.84      1779
     accuracy                           0.86      1779
    macro avg       0.86      0.86      0.86      1779
 weighted avg       0.86      0.86      0.86      1779
-    """)
+            """)
 
     st.markdown("---")
-    st.header("4. Confusion Matrix")
-    st.markdown("""
-Each model was evaluated using a labeled heatmap of the confusion matrix. The axes are clearly  
-marked with "Predicted" and "True", and class labels "No Hate" and "Hate" are displayed. From the  
-heatmaps:
 
-- **RoBERTa** demonstrates high recall for the "No Hate" class but underperforms slightly in  
-  identifying "Hate".
+    with st.expander("📚 Model Justification"):
+        st.markdown("""
+We selected three state-of-the-art transformer-based models for hate speech detection: **DistilBERT**, 
+**RoBERTa**, and **DeBERTa**. These models were chosen due to their demonstrated effectiveness in
+natural language understanding tasks, especially those requiring nuanced language interpretation like
+hate speech detection. The architecture of each model offers unique benefits that align with the needs
+of our problem, ensuring robust performance across a range of linguistic inputs.
 
-- **DistilBERT** shows balanced classification performance across both labels.
+**DistilBERT** is a distilled version of BERT, significantly smaller and faster, yet still powerful.  
+It retains approximately 97% of BERT’s performance while using 40% fewer parameters, making it  
+optimal for real-time applications and limited-resource environments.
 
-- **DeBERTa** achieves the most consistent accuracy, showing fewer misclassifications in both  
-  directions.
+**RoBERTa** enhances BERT by removing the next sentence prediction objective and applying  
+dynamic masking and longer training, making it more robust for detecting implicit hostility.
 
-These matrices offer visual confirmation of performance trends observed in the classification reports.
+**DeBERTa** introduces disentangled attention and improved positional embeddings, enhancing its  
+ability to interpret contextual and indirect language effectively.
 """)
 
-    st.markdown("---")
-    st.header("5. Error Analysis")
-    st.markdown("""
-Misclassifications across models tend to occur in linguistically ambiguous or culturally contextual  
-expressions. For instance:
+    with st.expander("📊 Confusion Matrix Analysis"):
+        st.markdown("""
+- **RoBERTa**: High recall for "No Hate", struggles slightly with "Hate".
+- **DistilBERT**: Balanced across classes.
+- **DeBERTa**: Most consistent accuracy, fewer misclassifications.
+""")
 
-- A sentence like *"Sure, they deserve it..."* was tagged as "No Hate" by DistilBERT despite having a  
-  sarcastic and hostile undertone.
+    with st.expander("🧠 Error Analysis"):
+        st.markdown("""
+- Misclassifications appear in sarcastic or culturally loaded texts.
+- Examples:
+    - *"Sure, they deserve it..."* → Misclassified as No Hate by DistilBERT.
+    - *"Go back to where you came from."* → Misclassified by RoBERTa.
 
-- The phrase *"Go back to where you came from"* was misclassified by RoBERTa, likely due to the  
-  lack of overt aggression.
-
-Such examples highlight the models’ difficulties in detecting sarcasm, euphemisms, and culturally  
-loaded phrases. These errors indicate limitations in capturing pragmatic meaning without external  
-context.
-
-To improve performance, we suggest the following enhancements:
-
-- Incorporate domain-specific corpora with varied hate speech patterns and cultural expressions  
-  for fine-tuning.
-
-- Augment input features with linguistic indicators like sentiment scores or part-of-speech tags.
-
-- Integrate contextual signals from metadata (e.g., user history or hashtags) or ensemble  
-  approaches using complementary models.
-
-These strategies could boost the models’ ability to recognize implicit and context-heavy hate speech  
-more reliably.
+**Suggestions for Improvement**:
+- Fine-tuning with domain-specific corpora.
+- Adding sentiment/POS features.
+- Incorporating context (hashtags, user history) or ensembles.
 """)

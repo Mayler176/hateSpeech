@@ -7,10 +7,6 @@ def run_tuning():
     import os
 
 
-    st.write("Current working directory:", os.getcwd())
-    st.write("Files in current directory:", os.listdir())
-
-
     # --- Configurar la página ---
     st.title("🚀 Hyperparameter Tuning Dashboard")
     st.markdown("""
@@ -25,15 +21,16 @@ def run_tuning():
     def load_data():
         df_roberta = pd.read_csv("./tuning_results_roberta.csv")
         df_deberta = pd.read_csv("./tuning_results_deberta.csv")
+        df_distilbert = pd.read_csv("./tuning_results_distilbert")
 
-        return df_roberta, df_deberta
+        return df_roberta, df_deberta, df_distilbert
 
     # --- Datos ---
-    df_roberta, df_deberta = load_data()
+    df_roberta, df_deberta, df_distilbert = load_data()
 
     # --- Selector de modelo ---
-    model_choice = st.selectbox("Selecciona el modelo:", ["RoBERTa", "DeBERTa"])
-    df_selected = df_roberta if model_choice == "RoBERTa" else df_deberta
+    model_choice = st.selectbox("Selecciona el modelo:", ["RoBERTa", "DeBERTa", "DistilBERT"])
+    df_selected = df_roberta if model_choice == "RoBERTa" else df_deberta if model_choice == "DeBERTa" else df_distilbert
 
     # --- Visualización interactiva ---
     st.subheader("📈 Evolución del F1-Score")
@@ -60,13 +57,3 @@ def run_tuning():
     # --- Tabla completa ---
     st.subheader("📋 Resultados completos")
     st.dataframe(df_selected.sort_values(by="f1_score", ascending=False).reset_index(drop=True), use_container_width=True)
-
-    # --- Mostrar screenshots si existen ---
-    screenshot_path = f"screenshots/{model_choice.lower()}"
-    if os.path.exists(screenshot_path):
-        st.subheader("🖼️ Capturas del proceso")
-        image_files = [f for f in os.listdir(screenshot_path) if f.endswith(".png")]
-        for img in sorted(image_files):
-            st.image(f"{screenshot_path}/{img}", use_column_width=True)
-    else:
-        st.info("Agrega capturas del proceso en la carpeta 'screenshots/roberta' o 'screenshots/deberta' para mostrarlas aquí.")
